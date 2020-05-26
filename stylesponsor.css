@@ -1,0 +1,14 @@
+
+#article_donor_right{
+	margin-left: 2%;
+	background-color: #00FFFF;
+	padding: 2%;	
+	border: 5px solid #000000;
+	font-size: 400px;
+}
+
+#main_content_dimension{
+	width: 46.6%;
+	float: left;
+	padding: 1%;
+}
