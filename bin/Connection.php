@@ -8,7 +8,7 @@ class Connection
 
     function __construct()
     {
-        $production = true;// true in production
+        $production = false;// true in production
         $username = "";
         $pass = "";
         if ($production) {
@@ -22,9 +22,9 @@ class Connection
         }
         $conn = NULL;
         try {
-            $conn = new PDO("mysql:host=localhost;dbname=" . $dbname, $username, $password);
+            $conn = new PDO("mysql:host=localhost;dbname=" . $dbname . ";charset=utf8mb4", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$conn->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES 'utf8'");
+			//$conn->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES 'utf8'");
         } catch (PDOException $e) {
             echo 'ERROR: ' . $e->getMessage();
         }
