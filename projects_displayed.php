@@ -1,19 +1,22 @@
 <?php
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vunnava/bin/functions.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/vunnava/bin/db_functions.php';
 
 // Start session to store variables
-if(!isset($_SESSION)) 
-    { 
-        session_start(); 
-    } 
-// Allows user to return 'back' to this page
-ini_set('session.cache_limiter','public');
-session_cache_limiter(false);
+if(!isset($_SESSION)) { 
+	// Allows user to return 'back' to this page
+	ini_set('session.cache_limiter','public');
+	session_cache_limiter(false);
+
+    session_start(); 
+}
  ?>
  
 <!doctype html>
 <html lang="en">
+<link rel="icon"
+      type="image/png"
+      href="favicon.ico">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -84,209 +87,155 @@ if(isset($_GET['success']))
 		
     </div>
 	
+<?php
+$projects = get_projects();
+
+if($_GET['id'] == 0) {
+	?>
+
+			<div id="wrap">
+
+				<div class="container">
+
+
+					<table id="info" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered" width="100%">
+
+						<thead>
+
+							<tr>
+
+								<th>Picture</th>
+
+								<th>Name</th>
+
+								<th>Description</th>
+
+								<th>Project Status</th>
+
+							</tr>
+
+						</thead>
+
+						<tbody>
+
 	<?php
-     require 'ProjectManagementSystem/configure.php';
 
-	 	
-		$image_reference_array = [];
-	 
-// Establishing Connection with Server
-$servername = DATABASE_HOST;
-$db_username = DATABASE_USER;
-$db_password = DATABASE_PASSWORD;
-$database = DATABASE_DATABASE;
-
-// Create connection
-$conn = new mysqli($servername, $db_username, $db_password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// echo "Connected successfully<br>";
-$conn->set_charset("utf8");
-
-
-if($_GET['id'] == 0){
-?>
-
-		<div id="wrap">
-
-			<div class="container">
-
-
-				<table id="info" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered" width="100%">
-
-					<thead>
-
-						<tr>
-
-							<th>Picture</th>
-
-							<th>Name</th>
-
-							<th>Description</th>
-
-							<th>Project Status</th>
-
-						</tr>
-
-					</thead>
-
-					<tbody>
-
-<?php
-
-$sql = "SELECT * FROM project";
-
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {	
-
-    while($row = $result->fetch_assoc()) {
-
-        echo '
-		
-		<tr><td><a href="projects.php?id=' .$row["project_id"]. '">
-			';if ($row["project_image"]!= ""){echo '
-				<img class="img-responsive" src="' .$row["project_image"]. '" width="200" height="200" alt="">
-			';}else{echo'
-				<img class="img-responsive" src="ProjectManagementSystem/project_image/do_not_delete.png" width="200" height="200" alt="">
-			';}echo' 
-		</a></td>
-		
-		<td><a href="projects.php?id='.$row['project_id'].'">'.$row['project_name'].'</a></td>
-
-		<td>'.$row["description"]."</td>
-
-		
-		<td>".$row["project_status"]."</td></tr>";
-		
-	
-    }
-
-} else {
-
-    echo "0 results";
-
-}
-
-$conn->close();
-
-?>
-    </tbody>
-
-	<tfoot>
-
-		<tr>
-
-			<th>Picture</th>
-
-			<th>Name</th>
-
-			<th>Description</th>
-
-
-			<th>Project Status</th>
-			
-		</tr>
-
-	</tfoot>
-
-	</table>
-
-	</div>
-
-	</div>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
-
-		<script type="text/javascript">
-
-		$(document).ready(function() {
-
-  $('#info').DataTable();
-
-});
-
-		</script>
-
-
-		
-		
-		
-		
-		
-		
-	
-<?php
-}
-else{	
-// Create connection
-$conn = new mysqli($servername, $db_username, $db_password, $database);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// echo "Connected successfully<br>";
-$conn->set_charset("utf8");
-
-		
-			$sql1 = "SELECT * FROM project";
-		$result1 = $conn->query($sql1);
-
-echo'<table id="info" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered" width="100%">';
-
-if ($result1->num_rows > 0) {	
-		echo '<div class="container top_space">';
-		$i = 0;
-		echo'<tr>';
-    while($row = $result1->fetch_assoc()) {
-		if ($i > 3){//start a new row every 4 pictures
-			echo'</tr><tr>';
+	if (!is_null($projects)) {
+		foreach ($projects as $project) {
+			$id = $project['project_id'];
+			$image = $project['project_image'];
+			$name = $project['project_name'];
+			$description = $project['description'];
+			$status = $project['project_status'];
+			echo '<tr><td><a href="projects.php?id=' . $id . '">';
+			if ($image != "") {
+				echo '<img class="img-responsive" src="' . $image . '" width="200" height="200" alt="">';
+			} else {
+				echo '<img class="img-responsive" src="ProjectManagementSystem/project_image/do_not_delete.png" width="200" height="200" alt="">';
+			}
+			echo '</a></td>
+			<td><a href="projects.php?id=' . $id . '">' . $name . '</a></td>
+			<td>'.$description."</td>
+			<td>" . $status . "</td></tr>";
 		}
-			echo '<td>
-			<div class="thumbnail_wrapper">
-				<div class="thumbnail">
-					<a href="projects.php?id=' .$row["project_id"]. '">
-						';if ($row["project_image"]!= ""){echo '
-							<img class="img-responsive" src="' .$row["project_image"]. '" width="200" height="200" alt="">
-						';}else{echo'
-							<img class="img-responsive" src="ProjectManagementSystem/project_image/do_not_delete.png" width="200" height="200" alt="">
-						';} echo'
-					<div class="caption">
-						<p style="text-align: center">'. $row["project_name"].'</p>
-					</div>
-					</a>
-				</div>
-			</div></td>
-			 ';
-		if ($i > 3){
-			$i = 0;
-		}
-		$i++;
+	} else {
+		echo "0 results";
 	}
-}
-else {
-    echo "0 results";
-}
-echo' </tr></table> ';
-$conn->close();
+	?>
+		</tbody>
+
+		<tfoot>
+
+			<tr>
+
+				<th>Picture</th>
+
+				<th>Name</th>
+
+				<th>Description</th>
+
+
+				<th>Project Status</th>
+				
+			</tr>
+
+		</tfoot>
+
+		</table>
+
+		</div>
+
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
+
+			<script type="text/javascript">
+
+			$(document).ready(function() {
+
+	$('#info').DataTable();
+
+	});
+
+			</script>
+
+	<?php
+} else {
+	echo'<table id="info" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered" width="100%">';
+	if (!is_null($projects)) { 
+		echo '<div class="container top_space">';
+				$i = 0;
+				echo'<tr>';
+		foreach ($projects as $project) {
+			$id = $project['project_id'];
+			$image = $project['project_image'];
+			$name = $project['project_name'];
+			$description = $project['description'];
+			$status = $project['project_status'];
+			
+			if ($i > 3){//start a new row every 4 pictures
+				echo'</tr><tr>';
+			}
+			echo '<td>
+				<div class="thumbnail_wrapper">
+					<div class="thumbnail">
+						<a href="projects.php?id=' . $id . '">';
+							if ($image != ""){
+								echo '<img class="img-responsive" src="' . $image . '" width="200" height="200" alt="">';
+							} else {
+								echo '<img class="img-responsive" src="ProjectManagementSystem/project_image/do_not_delete.png" width="200" height="200" alt="">';
+							} 
+							echo '<div class="caption">
+								<p style="text-align: center">' . $name . '</p>
+							</div>
+						</a>
+					</div>
+				</div>
+			</td>';
+			if ($i > 3){
+				$i = 0;
+			}
+			$i++;
+		}
+	} else {
+		echo "0 results";
+	}
+	echo' </tr></table> ';
 }
 ?>	
 
 
 <div><!-- footer for vunnava website -->  
-			<?php
-				
-				echo"</div><div class=\"row\"><div class=\"col-md-12\">";
-				printFooter();
-						echo"</div></div>";
-				?>
+<?php
+
+echo"</div><div class=\"row\"><div class=\"col-md-12\">";
+printFooter();
+echo"</div></div>";
+?>
 			
 </body>
 
